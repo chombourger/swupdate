@@ -444,12 +444,14 @@ static int parse_images(parsertype p, void *cfg, struct swupdate_cfg *swcfg, lua
 		 */
 		seek_str[0] = '\0';
 
+		strcpy(image->kind, IMAGE_KIND_DEFAULT);
 		GET_FIELD_STRING(p, elem, "name", image->id.name);
 		GET_FIELD_STRING(p, elem, "version", image->id.version);
 		GET_FIELD_STRING(p, elem, "filename", image->fname);
 		GET_FIELD_STRING(p, elem, "volume", image->volname);
 		GET_FIELD_STRING(p, elem, "device", image->device);
 		GET_FIELD_STRING(p, elem, "mtdname", image->path);
+		GET_FIELD_STRING(p, elem, "kind", image->kind);
 		GET_FIELD_STRING(p, elem, "type", image->type);
 		GET_FIELD_STRING(p, elem, "offset", seek_str);
 		GET_FIELD_STRING(p, elem, "data", image->type_data);

@@ -38,5 +38,9 @@
 #define DATADST_DIR_SUFFIX	"datadst/"
 #define BOOT_SCRIPT_SUFFIX	"boot-script"
 
+#define IMAGE_KIND_OS		"OS"
+#define IMAGE_KIND_APP		"Application"
+#define IMAGE_KIND_DEFAULT	IMAGE_KIND_OS
+
 #endif
 
