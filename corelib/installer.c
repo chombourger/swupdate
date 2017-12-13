@@ -447,6 +447,34 @@ void cleanup_files(struct swupdate_cfg *software) {
 #endif
 }
 
+static void postupdate_env(struct swupdate_cfg *sw)
+{
+	struct img_kind_env_var {
+		const char *kind;
+		const char *var;
+	} vars [] = {
+		{ IMAGE_KIND_OS,  "SWU_OS_UPDATE"  },
+		{ IMAGE_KIND_APP, "SWU_APP_UPDATE" }
+	};
+	#define IMG_KIND_ENV_VARS (sizeof(vars)/sizeof(struct img_kind_env_var))
+	char var[SWUPDATE_GENERAL_STRING_SIZE];
+	unsigned int update_counters[IMG_KIND_ENV_VARS] = { 0 }, i;
+	struct img_type *img;
+
+	LIST_FOREACH(img, &sw->images, next) {
+		for(i=0; i<IMG_KIND_ENV_VARS; i++) {
+			if (!strcmp(img->kind, vars[i].kind)) {
+				update_counters[i]++;
+			}
+		}
+	}
+
+	for(i=0; i<IMG_KIND_ENV_VARS; i++) {
+		snprintf(var, sizeof(var), "%s=%u", vars[i].var, update_counters[i]);
+		putenv(var);
+	}
+}
+
 int postupdate(struct swupdate_cfg *swcfg, const char *info)
 {
 	swupdate_progress_done(info);
@@ -456,6 +484,7 @@ int postupdate(struct swupdate_cfg *swcfg, const char *info)
 		     SWUPDATE_GENERAL_STRING_SIZE) > 0)) {
 		DEBUG("Executing post-update command '%s'",
 		      swcfg->globals.postupdatecmd);
+		postupdate_env(swcfg);
 		int ret = system(swcfg->globals.postupdatecmd);
 		if (WIFEXITED(ret)) {
 			DEBUG("Post-update command returned %d", WEXITSTATUS(ret));
